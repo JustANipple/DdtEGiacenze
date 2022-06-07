@@ -1,0 +1,111 @@
+
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
+
+public class AnyFile {
+    
+    private String code;
+    private String descr;
+    private int qty;
+    
+    public AnyFile(String row) {
+        
+        String parts[] = row.split(";");
+        this.code = parts[0];
+        this.descr = parts[1];
+        //se è un Ddt, ha la Qty con la "," e va rimossa
+        if (parts[2].contains(",")) {
+            String[] temp = parts[2].split(",");
+            this.qty = Integer.valueOf(temp[0]);
+        //se è una Giacenza, va bene la parte intera
+        } else {
+            this.qty = Integer.valueOf(parts[2]);
+        }
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getDescr() {
+        return descr;
+    }
+
+    public void setDescr(String descr) {
+        this.descr = descr;
+    }
+
+    public int getQty() {
+        return qty;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
+    
+    public static ArrayList<String> readAndSort(String file) {
+        //Creazione di una lista per ordinare le stringhe
+        ArrayList<String> ordered = new ArrayList<>();
+        //Lettura del file
+        try (Scanner scanner = new Scanner(Paths.get(file))) {
+            while (scanner.hasNextLine()) {
+                ordered.add(scanner.nextLine());
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        //Ordinamento della lista di stringhe
+        Collections.sort(ordered);
+        return ordered;
+    }
+    
+    public static ArrayList<AnyFile> createObj(ArrayList<String> ordered) {
+        //Creazione di una lista per inserire gli oggetti
+         ArrayList<AnyFile> objects = new ArrayList<>();
+         //Creazione degli oggetti
+        for (String ord : ordered) {
+            objects.add(new AnyFile(ord));
+        }
+        return objects;
+    }
+    
+    //Stampa dell'intera lista di oggetti
+    public static void printAr(ArrayList<AnyFile> toPrint) {
+        for (AnyFile print : toPrint) {
+            System.out.println(print);
+        }
+    }
+    
+    public static ArrayList<AnyFile> toOrder(ArrayList<AnyFile> ddts, ArrayList<AnyFile> giacs) {
+        ArrayList<AnyFile> order = new ArrayList<>();
+        //scrollo il ddt
+        for (AnyFile ddt : ddts) {
+            //se order ha già il ddt, skippo
+            for (AnyFile o : order) {
+                if (order.isEmpty()) {
+                    order.add(ddt);
+                }
+                if (!o.getCode().equals(ddt.getCode())) {
+                    order.add(ddt);
+                }
+            }
+            
+            
+        }
+        for (AnyFile o : order) {
+                System.out.println(o);
+            }
+        return order;
+    }
+    
+    @Override
+    public String toString() {
+        return this.code + ";" + this.descr + ";" + this.qty;
+    }
+}
