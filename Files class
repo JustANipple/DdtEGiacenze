@@ -1,0 +1,116 @@
+
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
+
+
+public class Files {
+    
+    private String code;
+    private String descr;
+    private int qty;
+    
+    public Files(String row) {
+        
+        String[] parts = row.split(";");
+        this.code = parts[0];
+        this.descr = parts[1];
+        if (parts[2].contains(",")) {
+            String[] temp = parts[2].split(",");
+            this.qty = Integer.valueOf(temp[0]);
+        } else {
+            this.qty = Integer.valueOf(parts[2]);
+        }
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getDescr() {
+        return descr;
+    }
+
+    public void setDescr(String descr) {
+        this.descr = descr;
+    }
+
+    public int getQty() {
+        return qty;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
+    
+    public static ArrayList<Files> readAndSort(String file) {
+        
+        ArrayList<String> ordered = new ArrayList<>();
+        try (Scanner scanner = new Scanner(Paths.get(file))) {
+            while (scanner.hasNextLine()) {
+                ordered.add(scanner.nextLine());
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        Collections.sort(ordered);
+        return Files.createObj(ordered);
+    }
+    
+     public static ArrayList<Files> createObj(ArrayList<String> ordered) {
+         int sum = 0;
+        ArrayList<Files> objects = new ArrayList<>();
+        for (String ord : ordered) {
+            objects.add(new Files(ord));
+        }
+        for (Files object : objects) {
+            sum += object.getQty();
+        }
+         System.out.println("Il totale della somma delle quantità è " + sum);
+         return objects;
+    }
+     
+     public static ArrayList<Files> toOrder(ArrayList<Files> ddt, ArrayList<Files> giac) {
+         ArrayList<Files> lordine = new ArrayList<>();
+         boolean found = false;
+         int qtySum = 0;
+         
+         for(Files d : ddt) {
+             found = false;
+             for (Files g : giac) {
+                 if (g.getCode().equals(d.getCode())) {
+                    //giac > ddt , niente
+                    //giac = ddt
+                    found = true;
+                    if (g.getQty() >= d.getQty()) {
+                        continue;
+                    //ddt - giac
+                    } else if (g.getQty() > 0 && g.getQty() < d.getQty()) {
+                        lordine.add(new Files (d.getCode() + ";" + d.getDescr() + ";" + (d.getQty() - g.getQty())));
+                        qtySum += d.getQty() - g.getQty();
+                    }
+                }
+            }
+             //giac not found, creo qty ddt
+                 if (found == false) {
+                     lordine.add(new Files (d.getCode() + ";" + d.getDescr() + ";" + d.getQty()));
+                     qtySum += d.getQty();
+                 }
+        }
+         System.out.println("Il totale delle quantità da ordinare è: " + qtySum);
+         return lordine;
+     }
+    
+    @Override
+    public String toString() {
+        return this.code + ";" + this.descr + ";" + this.qty;
+    }
+    
+}
+
+
