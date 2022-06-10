@@ -3,36 +3,30 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 
-public class Main {
-
-    
+public class Main {    
     
     public static void main(String[] args) {
         
         Scanner scanner = new Scanner(System.in);
-        
-        ArrayList<Files> ddt = Files.readAndSort("ddt2.CSV");
-        ArrayList<Files> giac = Files.readAndSort("Giacenza.CSV");
-        
-        /*while (true) {
-            System.out.println("Scegli il file da stampare");
-            String file = scanner.nextLine();
-            if (file.isEmpty()) {
+        /*Files.CreateFile();
+        while (true) {
+            
+            if(ddtToRead.isEmpty()) {
                 break;
             }
-            if (file.equalsIgnoreCase("ddt2")) {
-                for (Files d : ddt) {
-                    System.out.println(d);
-                }                        
-            } else if (file.equalsIgnoreCase("giacenza")) {
-                for (Files g : giac) {
-                    System.out.println(g);
-                }
-            }
-            
+            Files.WriteToFile(ddtToRead);
         }*/
-        ArrayList<Files> orderIt = Files.toOrder(ddt, giac);
-        for (Files o : orderIt) {
+        System.out.println("Ddt da leggere:");
+        String ddtToRead = scanner.nextLine();
+        System.out.println("Giacenza da confrontare:");
+        String giacToRead = scanner.nextLine();
+        
+        ArrayList<Files> ddt = Files.createObj(Files.readAndSort(ddtToRead));
+        ArrayList<Files> giac = Files.createObj(Files.readAndSort(giacToRead));
+        
+        ArrayList<Files> toOrd = Files.toOrder(ddt, giac);
+        
+        for (Files o : toOrd) {
             System.out.println(o);
         }
     }
